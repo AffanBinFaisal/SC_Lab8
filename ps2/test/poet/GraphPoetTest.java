@@ -4,22 +4,46 @@
 package poet;
 
 import static org.junit.Assert.*;
-
 import org.junit.Test;
+import java.io.File;
+import java.io.IOException;
 
-/**
- * Tests for GraphPoet.
- */
 public class GraphPoetTest {
-    
-    // Testing strategy
-    //   TODO
-    
-    @Test(expected=AssertionError.class)
+
+    @Test(expected = AssertionError.class)
     public void testAssertionsEnabled() {
-        assert false; // make sure assertions are enabled with VM argument: -ea
+        assert false;
     }
-    
-    // TODO tests
-    
+
+    @Test
+    public void testInitializationWithEmptyCorpus() throws IOException {
+        File emptyCorpus = new File("testfiles/empty.txt");
+        GraphPoet poet = new GraphPoet(emptyCorpus);
+
+    }
+
+    @Test
+    public void testCorpusReading() throws IOException {
+        File corpusFile = new File("testfiles/sample_corpus.txt");
+        GraphPoet poet = new GraphPoet(corpusFile);
+
+    }
+
+    @Test
+    public void testPoemGenerationWithEmptyInput() throws IOException {
+        File corpusFile = new File("testfiles/sample_corpus.txt");
+        GraphPoet poet = new GraphPoet(corpusFile);
+        String poem = poet.poem("");
+        assertEquals("Expected an empty input to result in an empty poem", "", poem);
+    }
+
+    @Test
+    public void testPoemGenerationWithSingleWordInput() throws IOException {
+        File corpusFile = new File("testfiles/sample_corpus.txt");
+        GraphPoet poet = new GraphPoet(corpusFile);
+        String poem = poet.poem("word");
+        assertEquals("Expected the same word in the poem for a single-word input", "word", poem);
+    }
+
 }
+

@@ -5,41 +5,34 @@ package graph;
 
 import static org.junit.Assert.*;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
-/**
- * Tests for ConcreteEdgesGraph.
- * 
- * This class runs the GraphInstanceTest tests against ConcreteEdgesGraph, as
- * well as tests for that particular implementation.
- * 
- * Tests against the Graph spec should be in GraphInstanceTest.
- */
+import java.util.Map;
+
 public class ConcreteEdgesGraphTest extends GraphInstanceTest {
-    
-    /*
-     * Provide a ConcreteEdgesGraph for tests in GraphInstanceTest.
-     */
-    @Override public Graph<String> emptyInstance() {
+
+    // Provide a ConcreteEdgesGraph for tests in GraphInstanceTest.
+    @Override
+    public Graph<String> emptyInstance() {
         return new ConcreteEdgesGraph();
     }
-    
-    /*
-     * Testing ConcreteEdgesGraph...
-     */
-    
-    // Testing strategy for ConcreteEdgesGraph.toString()
-    //   TODO
-    
-    // TODO tests for ConcreteEdgesGraph.toString()
-    
-    /*
-     * Testing Edge...
-     */
-    
-    // Testing strategy for Edge
-    //   TODO
-    
-    // TODO tests for operations of Edge
-    
+
+    // Testing ConcreteEdgesGraph.toString()
+    @Test
+    public void testToStringEmptyGraph() {
+        Graph<String> graph = emptyInstance();
+        assertEquals("Graph should be empty", "Vertices: [], Edges: []", graph.toString());
+    }
+
+    @Test
+    public void testToStringNonEmptyGraph() {
+        Graph<String> graph = emptyInstance();
+        graph.add("A");
+        graph.add("B");
+        graph.set("A", "B", 5);
+        assertEquals("Graph should have vertices and edges", "Vertices: [A, B], Edges: [(A -> B, 5)]", graph.toString());
+    }
+
 }

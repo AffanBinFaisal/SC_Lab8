@@ -7,39 +7,36 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-/**
- * Tests for ConcreteVerticesGraph.
- * 
- * This class runs the GraphInstanceTest tests against ConcreteVerticesGraph, as
- * well as tests for that particular implementation.
- * 
- * Tests against the Graph spec should be in GraphInstanceTest.
- */
+import java.util.Map;
+
 public class ConcreteVerticesGraphTest extends GraphInstanceTest {
-    
-    /*
-     * Provide a ConcreteVerticesGraph for tests in GraphInstanceTest.
-     */
-    @Override public Graph<String> emptyInstance() {
+
+    // Provide a ConcreteVerticesGraph for tests in GraphInstanceTest.
+    @Override
+    public Graph<String> emptyInstance() {
         return new ConcreteVerticesGraph();
     }
-    
-    /*
-     * Testing ConcreteVerticesGraph...
-     */
-    
-    // Testing strategy for ConcreteVerticesGraph.toString()
-    //   TODO
-    
-    // TODO tests for ConcreteVerticesGraph.toString()
-    
-    /*
-     * Testing Vertex...
-     */
-    
-    // Testing strategy for Vertex
-    //   TODO
-    
-    // TODO tests for operations of Vertex
-    
+
+    // Testing ConcreteVerticesGraph.toString()
+    @Test
+    public void testToStringEmptyGraph() {
+        Graph<String> graph = emptyInstance();
+        assertEquals("Graph should be empty", "Vertices: []", graph.toString());
+    }
+
+    @Test
+    public void testToStringNonEmptyGraph() {
+        Graph<String> graph = emptyInstance();
+        graph.add("A");
+        graph.add("B");
+        assertEquals("Graph should have vertices", "Vertices: [A, B]", graph.toString());
+    }
+
+    // Example test for the Vertex class
+    @Test
+    public void testVertexToString() {
+        Vertex vertex = new Vertex("A");
+        assertEquals("Vertex toString should return the vertex label", "A", vertex.toString());
+    }
+
 }
