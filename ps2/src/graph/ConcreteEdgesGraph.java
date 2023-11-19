@@ -4,6 +4,7 @@
 package graph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,70 +21,146 @@ public class ConcreteEdgesGraph implements Graph<String> {
     private final List<Edge> edges = new ArrayList<>();
     
     // Abstraction function:
-    //   TODO
+    //   - The set of vertices represents the nodes in the directed graph.
+    //   - The list of edges represents the directed edges in the graph.
+    //   - Each edge in the list is a directed connection from its source vertex to its target vertex with a specified weight.
+    //   - The absence of a vertex in the set indicates that it is not part of the graph.
     // Representation invariant:
-    //   TODO
+    //   - Vertices in the graph must be non-null and distinct.
+    //   - Edges must have valid non-null source and target vertices.
+    //   - Edge weights must be non-negative.
+    //   - There should be no duplicate edges (same source, target, and weight).
+    //   - The graph should not have self-loops (edges where source and target are the same).
     // Safety from rep exposure:
-    //   TODO
+    //   - All fields (vertices and edges) are private and final, preventing direct access or modification by clients.
+    //   - Methods only return copies or immutable views of internal data structures to prevent clients from modifying the internal state.
+    //   - The class does not provide direct access to the internal set of vertices or list of edges.
     
-    // TODO constructor
+    // Constructor
+    public ConcreteEdgesGraph() {
+        // The graph is initially empty, so no specific initialization is needed here.
+    }
     
-    // TODO checkRep
+    // Representation invariant
+    private void checkRep() {
+        // Vertices must be non-null and distinct
+        assert vertices.stream().allMatch(vertex -> vertex != null) : "Vertices must be non-null";
+        assert vertices.size() == new HashSet<>(vertices).size() : "Vertices must be distinct";
+
+        // Edges must have valid non-null source and target vertices
+        for (Edge edge : edges) {
+            assert edge.getSource() != null : "Edge source must be non-null";
+            assert edge.getTarget() != null : "Edge target must be non-null";
+        }
+
+        // Edge weights must be non-negative
+        assert edges.stream().allMatch(edge -> edge.getWeight() >= 0) : "Edge weights must be non-negative";
+
+        // No duplicate edges (same source, target, and weight)
+        assert edges.size() == new HashSet<>(edges).size() : "Duplicate edges are not allowed";
+
+        // The graph should not have self-loops
+        assert edges.stream().noneMatch(edge -> edge.getSource().equals(edge.getTarget())) : "Graph should not have self-loops";
+    }
     
-    /**
-     * @param <vertex> must not be null and must be immutable
-     * @return true if the vertex is added, false if the vertex already exists
-     */
     @Override public boolean add(String vertex) {
-        throw new RuntimeException("not implemented");
+        if (vertex == null || vertices.contains(vertex)) {
+            // Vertex is null or already exists in the graph
+            return false;
+        }
+    
+        vertices.add(vertex);
+        checkRep(); // Check representation invariant
+        return true;
     }
     
-    /**
-     * @param <String> source and target, must not be null and must be immutable
-     * weight must be a non negative integar
-     * @return previous weight of the edge, 0 if there was noprevious edge
-     */
     @Override public int set(String source, String target, int weight) {
-        throw new RuntimeException("not implemented");
+        if (source == null || target == null || weight < 0) {
+            throw new IllegalArgumentException("Invalid arguments");
+        }
+    
+        // Check if the source and target vertices exist in the graph
+        if (!vertices.contains(source) || !vertices.contains(target)) {
+            throw new IllegalArgumentException("Source or target vertex not in the graph");
+        }
+    
+        // Remove any existing edge with the same source and target
+        edges.removeIf(edge -> edge.getSource().equals(source) && edge.getTarget().equals(target));
+    
+        // Add the new edge
+        edges.add(new Edge(source, target, weight));
+    
+        checkRep(); // Check representation invariant
+    
+        return weight;
     }
     
-    /**
-     * @param <vertex> must not be null and must be immutable
-     * @return true if the vertex is removed, false if there was no such vertex
-     */
     @Override public boolean remove(String vertex) {
-        throw new RuntimeException("not implemented");
+        if (vertex == null || !vertices.contains(vertex)) {
+            // Vertex is null or does not exist in the graph
+            return false;
+        }
+    
+        // Remove edges with the specified vertex as the source or target
+        edges.removeIf(edge -> edge.getSource().equals(vertex) || edge.getTarget().equals(vertex));
+    
+        // Remove the vertex from the set of vertices
+        vertices.remove(vertex);
+    
+        checkRep(); // Check representation invariant
+        return true;
     }
     
-    /**
-     * @param nothing
-     * @return all the vertices of the graph in the form of a set
-     */
     @Override public Set<String> vertices() {
-        throw new RuntimeException("not implemented");
+        return new HashSet<>(vertices);
     }
     
-    /**
-     * @param <target> must not be null and must be immutable
-     * @return a map containing all the source vertices and their corresponding weights having edges directed towards the target 
-     */
     @Override public Map<String, Integer> sources(String target) {
-        throw new RuntimeException("not implemented");
+        if (target == null || !vertices.contains(target)) {
+        throw new IllegalArgumentException("Invalid target vertex");
+        }
+
+        Map<String, Integer> sourceMap = new HashMap<>();
+
+        for (Edge edge : edges) {
+            if (edge.getTarget().equals(target)) {
+                // Edge is directed towards the target vertex
+                sourceMap.put(edge.getSource(), edge.getWeight());
+            }
+        }
+
+        return sourceMap;
     }
     
-    /**
-     * @param <source> must not be null and must be immutable
-     * @return a map containing all the target vertices and their corresponding weights having edges directed from the source
-     */
     @Override public Map<String, Integer> targets(String source) {
-        throw new RuntimeException("not implemented");
+        if (source == null || !vertices.contains(source)) {
+            throw new IllegalArgumentException("Invalid source vertex");
+        }
+    
+        Map<String, Integer> targetMap = new HashMap<>();
+    
+        for (Edge edge : edges) {
+            if (edge.getSource().equals(source)) {
+                // Edge is directed from the source vertex
+                targetMap.put(edge.getTarget(), edge.getWeight());
+            }
+        }
+    
+        return targetMap;
     }
     
-    // TODO toString()
-    /**
-     * @param nothing
-     * @return a string representation of the graph showing vertices and edges
-     */
+    @Override public String toString() {
+        StringBuilder sb = new StringBuilder();
+    
+        sb.append("Vertices: ").append(vertices).append("\n");
+        sb.append("Edges:\n");
+    
+        for (Edge edge : edges) {
+            sb.append(edge).append("\n");
+        }
+    
+        return sb.toString();
+    }
     
 }
 
@@ -97,28 +174,58 @@ public class ConcreteEdgesGraph implements Graph<String> {
  */
 class Edge {
     
-    // TODO fields
+    private final String source;
+    private final String target;
+    private final int weight;
     
     // Abstraction function:
-    //   TODO
+    //   - Represents a directed edge in the graph from the source vertex to the target vertex.
+    //   - The weight represents the weight of the directed edge.
     // Representation invariant:
-    //   TODO
+    //   - Source and target vertices must be non-null and distinct.
+    //   - The weight of the edge must be non-negative.
     // Safety from rep exposure:
-    //   TODO
-    
-    // TODO constructor
-    /**
-     * @param <String> source and target must not be null, and must be immutable
-     * @return creates a new edge between the given vertices having the given weight
-     */
+    //   - Fields (source, target, weight) are private and final, preventing direct access or modification by clients.
+    //   - Methods only provide read access or copies of internal data, preventing clients from modifying the internal state.
 
-    // TODO checkRep
     
-    // TODO methods
     
-    // TODO toString()
-     /**
-     * @param nothing
-     * @return a string representation of the edge showing source and target vertex and the wetght
-     */
+
+    // Constructor
+    public Edge(String source, String target, int weight) {
+        if (source == null || target == null || weight < 0) {
+            throw new IllegalArgumentException("Invalid arguments for Edge");
+        }
+        this.source = source;
+        this.target = target;
+        this.weight = weight;
+        checkRep(); // Check representation invariant
+    }
+
+    // Getter methods
+    public String getSource() {
+        return source;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    // Representation invariant
+    private void checkRep() {
+        assert source != null : "Source must be non-null";
+        assert target != null : "Target must be non-null";
+        assert weight >= 0 : "Weight must be non-negative";
+    }
+
+    // toString method
+    @Override
+    public String toString() {
+        return String.format("Edge: %s -> %s (Weight: %d)", source, target, weight);
+    }
+    
 }
